@@ -1,2 +1,2 @@
 # aristotle
-formalisation of Aristotle's assertor syllogistic 
+formalisation of Aristotle's assertoric syllogistic 
