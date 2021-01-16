@@ -11,7 +11,6 @@ variable {α : Type}
 --variables [semilattice_inf_bot α]
 variables [semilattice_inf_bot α] {A B C : α}
 
-
 def universal_affirmation (A : α) (B: α) : Prop := 
   A ⊓ B = B
 infixr ` a ` : 80 := universal_affirmation
@@ -29,8 +28,6 @@ def particular_denial (A: α) (B: α) : Prop :=
 infixr ` o ` : 80 := particular_denial
 
 /-    We prove the soundness of the axiom system dr -/
-
-#check semilattice_inf
 
 lemma Barbara : A a B → B a C → A a C :=
 begin
@@ -56,15 +53,13 @@ rw inf_comm at h1,
 assumption
 end
 
-lemma a_conv : A ≠ ⊥ →  B ≠ ⊥ →  A a B → B i A :=
+lemma a_conv : B ≠ ⊥ →  A a B → B i A :=
 begin
 intros h1 h2 h3,
-rw universal_affirmation at h3,
-simp [particular_affirmation],
-by_contra h4,
-rw inf_comm at h4,
-have h5 : B = ⊥, from eq.trans (eq.symm h3) h4,
-show false, from h2 h5
+rw universal_affirmation at h2,
+rw inf_comm at h3,
+have h4 : B = ⊥, from eq.trans (eq.symm h2) h3,
+show false, from h1 h4
 end 
 
 lemma contr_1 : A a B = ¬ A o B :=
@@ -93,9 +88,16 @@ end
 lemma Ferio : A e B → B i C → A o C :=
 begin
   intros h1 h2,
-  simp [particular_affirmation, universal_denial, particular_denial] at *,
+  simp [particular_affirmation, universal_denial] at h1 h2,
+  rw [particular_denial, ne],
   by_contra h3,
-  exact exists.intro p (and.intro h.1 h3)
+  rw inf_comm at h1,
+  have h4 : B ⊓ C = ⊥, by calc B ⊓ C
+      = B ⊓ (A ⊓ C) : by rw h3
+  ... = (B ⊓ A) ⊓ C : by rw inf_assoc 
+  ... = ⊥ ⊓ C : by rw h1
+  ... = ⊥ : by exact bot_inf_eq,
+show false, from h2 h4
 end
 
 lemma i_conv : A i B → B i A :=
