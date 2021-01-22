@@ -5,7 +5,13 @@ Author: Huub Vromen
 
 import order.bounded_lattice
 
-/-  Preorder semantics for Aristotle's assertoric syllogisms -/
+/-  Preorder semantics for Aristotle's assertoric syllogisms
+Terms are regarded to be primitives. They form a meet semi-lattice with bot.
+See, for instance, Andrade-Lotero, Edgar, and Catarina Dutilh Novaes. 
+‘Validity, the Squeezing Argument and Alternative Semantic Systems: 
+The Case of Aristotelian Syllogistic’. Journal of Philosophical Logic 41, 
+no. 2 (April 2012): 387–418, pp. 402-403.
+-/
 
 variable {α : Type} 
 --variables [semilattice_inf_bot α]
@@ -27,7 +33,7 @@ def particular_denial (A: α) (B: α) : Prop :=
   A ⊓ B ≠ B
 infixr ` o ` : 80 := particular_denial
 
-/-    We prove the soundness of the axiom system dr -/
+/-    We prove the soundness of the axiom system DR -/
 
 lemma Barbara : A a B → B a C → A a C :=
 begin
@@ -72,7 +78,7 @@ begin
 simp [particular_affirmation, universal_denial] at *, 
 end
 
-/-  the following lemma's are not strictly necessary  -/
+/-  it is, of course, also possible to prove the redundant axioms  -/
 
 lemma Darii : A a B → B i C → A i C :=
 begin

@@ -4,12 +4,15 @@ Author: Huub Vromen
 -/
 
 import data.set.basic
-/-  Set-theoretic semantics for Aristotle's assertoric syllogisms -/
+/-  
+A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
+See, for instance, Smith, Robin. Aristotle Prior Analytics. Indianapolis, IN: Hackett, 1989.
+A term is interpreted as a non-empty subset of some set of individuals.
+-/
 
 variable {α : Type}
 variables {A B C : set α}
 variable {x : α}
-
 
 def universal_affirmation (A: set α) (B: set α) : Prop := 
   A ∩ B = B
@@ -40,7 +43,7 @@ show false, from h6 h1
 end
 
 
-/-    We prove the soundness of the axiom system dr -/
+/-    We prove the soundness of the axiom system DR -/
 
 lemma Barbara : A a B → B a C → A a C :=
 begin
@@ -101,7 +104,7 @@ split,
   tidy  }
 end
 
-/-  the following lemma's are not strictly necessary  -/
+/-  it is, of course, also possible to prove the redundant axioms  -/
 
 lemma Darii : A a B → B i C → A i C :=
 begin

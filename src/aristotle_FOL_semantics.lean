@@ -3,7 +3,12 @@ Copyright (c) 2021 Huub Vromen. All rights reserved.
 Author: Huub Vromen
 -/
 
-/-  First-order semantics for Aristotle's assertoric syllogisms -/
+/-  First-order semantics for Aristotle's assertoric syllogisms
+    A first-order logic semantics is a variant of a set-theoretic semantics.
+A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
+See, for instance, ch. 3 of Malink, Marko. Aristotle’s Modal Syllogistic. Harvard University Press, 2013.
+A term is interpreted as a non-empty subset of some set of individuals.
+-/
 
 variable {α : Type}
 variables {A B C : α → Prop}
@@ -26,8 +31,7 @@ def particular_denial (A: α → Prop) (B: α → Prop) : Prop :=
   ∃x, B x ∧ ¬ A x
 infixr ` o ` : 80 := particular_denial
 
-/-  We prove the soundness of the axioms dr 
-    by proving all axioms / induction rules -/
+/-    We prove the soundness of the axiom system DR -/
 
 lemma Barbara : A a B → B a C → A a C :=
 begin
@@ -93,7 +97,7 @@ apply iff.intro,
   show false, from h1 h6    }
 end
 
-/-  the following lemma's are not strictly necessary  -/
+/-  it is, of course, also possible to prove the redundant axioms  -/
 
 lemma i_conv : A i B → B i A :=
 begin
