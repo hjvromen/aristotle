@@ -7,33 +7,34 @@ import data.set.basic
 /-  
 A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
 See, for instance, Smith, Robin. Aristotle Prior Analytics. Indianapolis, IN: Hackett, 1989.
-A term is interpreted as a non-empty subset of some set of individuals.
+Terms are interpreted as non-empty subsets of some set of individuals.
 -/
 
-variable {α : Type}
+variable {α : Type*}
 variables {A B C : set α}
+-- *** how can I stipulate that these sets have to be nonempty?
 variable {x : α}
 
-def universal_affirmation (A: set α) (B: set α) : Prop := 
+def universal_affirmative (A: set α) (B: set α) : Prop := 
   A ∩ B = B
-infixr ` a ` : 80 := universal_affirmation
+infixr ` a ` : 80 := universal_affirmative
 
-def universal_denial (A: set α) (B: set α) : Prop := 
+def universal_negative (A: set α) (B: set α) : Prop := 
   A ∩ B = ∅ 
-infixr ` e ` : 80 := universal_denial
+infixr ` e ` : 80 := universal_negative
 
-def particular_affirmation (A: set α) (B: set α) : Prop := 
+def particular_affirmative (A: set α) (B: set α) : Prop := 
   (A ∩ B).nonempty 
-infixr ` i ` : 80 := particular_affirmation
+infixr ` i ` : 80 := particular_affirmative
 
-def particular_denial (A: set α) (B: set α) : Prop :=  
+def particular_negative (A: set α) (B: set α) : Prop :=  
   A ∩ B ≠ B
-infixr ` o ` : 80 := particular_denial
+infixr ` o ` : 80 := particular_negative
 
-/- first, we prove a helpful lemma -/
+--first, we prove a helpful lemma
 lemma inter_empty (h1 : A e B) : x ∈ B → x ∉ A :=
 begin
-rw universal_denial at h1,
+rw universal_negative at h1,
 intro h2,
 by_contra h3,
 have h4 : x ∈ A ∩ B, from set.mem_inter h3 h2,
@@ -48,7 +49,7 @@ end
 lemma Barbara : A a B → B a C → A a C :=
 begin
 intros h1 h2,
-rw universal_affirmation at *,
+rw universal_affirmative at *,
 calc A ∩ C 
     = A ∩ (B ∩ C) : by rw h2
 ... = (A ∩ B) ∩ C : by tidy
@@ -59,9 +60,8 @@ end
 lemma Celarent : A e B → B a C → A e C :=
 begin
   intros h1 h2,
-  rw universal_denial at *,
-  -- p h3,
-  rw universal_affirmation at h2,
+  rw universal_negative at *,
+  rw universal_affirmative at h2,
   calc A ∩ C 
       = A ∩ (B ∩ C): by rw h2
   ... = (A ∩ B) ∩ C: by tidy
@@ -72,7 +72,7 @@ end
 lemma e_conv : A e B → B e A :=
 begin
 intro h1,
-rw universal_denial at *,
+rw universal_negative at *,
 cc,
 end
 
@@ -80,21 +80,21 @@ lemma a_conv : (A a B ∧ B.nonempty) → B i A :=
   begin
   intro h1,
   cases h1.2 with p hp,
-  rw particular_affirmation,
-  rw universal_affirmation at h1,
+  rw particular_affirmative,
+  rw universal_affirmative at h1,
   cc,
   end 
 
 lemma contr_1 : A a B = ¬ A o B := 
 begin
 --apply propext,
-simp [particular_denial, universal_affirmation] at *, 
+simp [particular_negative, universal_affirmative] at *, 
 end
 
 lemma contr_2 : A e B = ¬ A i B :=
 begin
 --apply propext,
-simp [particular_affirmation, universal_denial] at *,
+simp [particular_affirmative, universal_negative] at *,
 split,
 { intro h1,
   by_contra h2,
@@ -113,7 +113,7 @@ intros h1 h2,
 --by_contra h3,
 cases h2 with p hp,
 cases hp,
-rw universal_affirmation at h1,
+rw universal_affirmative at h1,
 have h4 : p ∈ A ∩ B, by cc,
 have h5 : p ∈ A, by exact h4.left,
 exact exists.intro p (and.intro h5 hp_right),
@@ -123,7 +123,7 @@ lemma Ferio : A e B → B i C → A o C :=
 begin
   intros h1 h2,
   cases h2 with p h,
-  rw particular_denial,
+  rw particular_negative,
   cases h with hb hc,
   have h3 : p ∉ A, by exact inter_empty h1 hb,
   simp,

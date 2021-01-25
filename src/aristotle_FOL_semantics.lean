@@ -4,39 +4,39 @@ Author: Huub Vromen
 -/
 
 /-  First-order semantics for Aristotle's assertoric syllogisms
-    A first-order logic semantics is a variant of a set-theoretic semantics.
+A first-order logic semantics is a variant of a set-theoretic semantics.
 A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
 See, for instance, ch. 3 of Malink, Marko. Aristotle’s Modal Syllogistic. Harvard University Press, 2013.
-A term is interpreted as a non-empty subset of some set of individuals.
+Terms are interpreted as non-empty subsets of some set of individuals.
 -/
 
 variable {α : Type}
 variables {A B C : α → Prop}
 variable {x : α}
 
-def universal_affirmation (A: α → Prop) (B: α → Prop) : Prop := 
+def universal_affirmative (A: α → Prop) (B: α → Prop) : Prop := 
   ∀x, B x → A x
-infixr ` a ` : 80 := universal_affirmation
+infixr ` a ` : 80 := universal_affirmative
 
-def universal_denial (A: α → Prop) (B: α → Prop) : Prop :=  
+def universal_negative (A: α → Prop) (B: α → Prop) : Prop :=  
   ∀x, B x → ¬ A x
-infixr ` e ` : 80 := universal_denial
+infixr ` e ` : 80 := universal_negative
 
-def particular_affirmation (A: α → Prop) (B: α → Prop) : Prop := 
+def particular_affirmative (A: α → Prop) (B: α → Prop) : Prop := 
   ∃x, A x ∧ B x
--- existential import
-infixr ` i ` : 80 := particular_affirmation
+-- existential import needs to be stipulated
+infixr ` i ` : 80 := particular_affirmative
 
-def particular_denial (A: α → Prop) (B: α → Prop) : Prop := 
+def particular_negative (A: α → Prop) (B: α → Prop) : Prop := 
   ∃x, B x ∧ ¬ A x
-infixr ` o ` : 80 := particular_denial
+infixr ` o ` : 80 := particular_negative
 
 /-    We prove the soundness of the axiom system DR -/
 
 lemma Barbara : A a B → B a C → A a C :=
 begin
 intros h1 h2,
-rw universal_affirmation,
+rw universal_affirmative,
 { intros p h3,
   have h4 : B p := by exact h2 p h3,
   exact h1 p h4 },
@@ -59,8 +59,8 @@ end
 lemma a_conv (hex: ∃x, B x) : A a B → B i A :=
   begin
   intro h1,
-  rw universal_affirmation at h1,
-  rw particular_affirmation,
+  rw universal_affirmative at h1,
+  rw particular_affirmative,
   cases hex with p hp,
   apply exists.intro p (and.intro hp (h1 p hp))
   end 
@@ -68,7 +68,7 @@ lemma a_conv (hex: ∃x, B x) : A a B → B i A :=
 lemma contr_1 : A a B = ¬ A o B :=
 begin
 apply propext,
-simp [particular_denial, universal_affirmation] at *, 
+simp [particular_negative, universal_affirmative] at *, 
 apply iff.intro,
 { intro h1,
   by_contra h2,
@@ -84,7 +84,7 @@ end
 lemma contr_2 : A e B = ¬ A i B :=
 begin
 apply propext,
-simp [particular_affirmation, universal_denial] at *, 
+simp [particular_affirmative, universal_negative] at *, 
 apply iff.intro,
 { intro h1,
   by_contra h2,
@@ -99,20 +99,11 @@ end
 
 /-  it is, of course, also possible to prove the redundant axioms  -/
 
-lemma i_conv : A i B → B i A :=
-begin
-intros h1,
-cases h1 with p h2,
-cases h2 with q r,
-apply exists.intro p (and.intro r q)
-end
-
 lemma Darii : A a B → B i C → A i C :=
 begin
 intros h1 h2,
 cases h2 with p h,
 apply exists.intro p,
---have h2 : A p := by exact h1 p h.2,
 exact and.intro (h1 p h.1) h.2
 end
 
@@ -124,5 +115,13 @@ begin
   have h3 : ¬ A p := by exact h1 p h.1,
   --rw particular_denial,
   apply exists.intro p (and.intro h.2 h3)
+end
+
+lemma i_conv : A i B → B i A :=
+begin
+intros h1,
+cases h1 with p h2,
+cases h2 with q r,
+apply exists.intro p (and.intro r q)
 end
 
