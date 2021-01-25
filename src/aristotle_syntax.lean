@@ -211,7 +211,7 @@ a. state some rules that are sufficient to refute all invalid syllogisms;
    Lecture Notes in Computer Science. Springer Berlin Heidelberg, 2020.
 b. investigate if it is possible to prove these rules in our proof system.
 
-2. To show that there are exactly 256 syllogisms, I woulkd like to give an inductive 
+2. To show that there are exactly 256 syllogisms, I would like to give an inductive 
 definition of a syllogism, maybe starting with:
    
    inductive assertoric : Type
