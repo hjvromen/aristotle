@@ -5,7 +5,9 @@ Author: Huub Vromen
 
 import order.bounded_lattice
 
-/-  Preorder semantics for Aristotle's assertoric syllogisms
+/-  Preorder semantics for Aristotle's assertoric syllogisms. 
+The set-theoretic semantics and firist-order logic semantics are extensional 
+semantics, based on sets of individuals. Now we present an internsional semantics.
 Terms are regarded to be primitives. They form a meet semi-lattice with bot.
 See, for instance, Andrade-Lotero, Edgar, and Catarina Dutilh Novaes. 
 ‘Validity, the Squeezing Argument and Alternative Semantic Systems: 
@@ -17,32 +19,32 @@ variable {α : Type}
 variables [semilattice_inf_bot α] {A B C : α}
 -- *** how can I stipulate that these variables are not the bottom element of α?
 
-def universal_affirmative (A : α) (B: α) : Prop := 
-  A ⊓ B = B
+def universal_affirmative (A : α) (B: α) : Prop :=   A ⊓ B = B
 infixr ` a ` : 80 := universal_affirmative
 
-def universal_negative (A : α) (B: α) : Prop := 
-  A ⊓ B = ⊥ 
+def universal_negative (A : α) (B: α) : Prop :=   A ⊓ B = ⊥ 
 infixr ` e ` : 80 := universal_negative
 
-def particular_affirmative (A: α) (B: α) : Prop := 
-  A ⊓ B ≠ ⊥ 
+def particular_affirmative (A: α) (B: α) : Prop :=   A ⊓ B ≠ ⊥ 
 infixr ` i ` : 80 := particular_affirmative
 
-def particular_negative (A: α) (B: α) : Prop :=  
-  A ⊓ B ≠ B
+def particular_negative (A: α) (B: α) : Prop :=   A ⊓ B ≠ B
 infixr ` o ` : 80 := particular_negative
+
+-- contradictory is defined as negation
+def c (p : Prop) : Prop := ¬ p
+
 
 /-    We prove the soundness of the axiom system DR -/
 
-lemma Barbara : A a B → B a C → A a C :=
+lemma Barbara₁ : A a B → B a C → A a C :=
 begin
 intros hab hbc,
 rw universal_affirmative at *,
 finish
 end
 
-lemma Celarent : A e B → B a C → A e C :=
+lemma Celarent₁ : A e B → B a C → A e C :=
 begin
 intros h1 h2,
 simp [universal_affirmative, universal_negative] at *,
@@ -68,19 +70,27 @@ have h4 : B = ⊥, from eq.trans (eq.symm h2) h3,
 show false, from h1 h4
 end 
 
-lemma contr_1 : A a B = ¬ A o B :=
+lemma contr {p r : Prop} : (c r → c p) → p → r :=
 begin
-simp [particular_negative, universal_affirmative] at *, 
+intros h1,
+contrapose!,
+assumption
 end
 
-lemma contr_2 : A e B = ¬ A i B :=
-begin
-simp [particular_affirmative, universal_negative] at *, 
-end
+/- we can also prove the contradictories  -/
+
+lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
+
+lemma contr_e : c (A e B) = A i B := by simp [c, particular_affirmative, universal_negative]
+
+lemma contr_i : c (A i B) = A e B := by simp [c, particular_affirmative, universal_negative]
+
+lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
+
 
 /-  it is, of course, also possible to prove the redundant axioms  -/
 
-lemma Darii : A a B → B i C → A i C :=
+lemma Darii₁ : A a B → B i C → A i C :=
 begin
 intros h1 h2,
 simp [particular_affirmative, universal_affirmative] at *, 
@@ -91,7 +101,7 @@ show false, from h2 h5
 end
 
 
-lemma Ferio : A e B → B i C → A o C :=
+lemma Ferio₁ : A e B → B i C → A o C :=
 begin
   intros h1 h2,
   simp [particular_affirmative, universal_negative] at h1 h2,

@@ -10,6 +10,7 @@ See, for instance, ch. 3 of Malink, Marko. Aristotle’s Modal Syllogistic. Harv
 Terms are interpreted as non-empty subsets of some set of individuals.
 -/
 
+import data.set.basic
 variable {α : Type}
 variables {A B C : α → Prop}
 variable {x : α}
@@ -31,9 +32,13 @@ def particular_negative (A: α → Prop) (B: α → Prop) : Prop :=
   ∃x, B x ∧ ¬ A x
 infixr ` o ` : 80 := particular_negative
 
+-- contradictory is defined as negation
+def c (p : Prop) : Prop := ¬ p
+
+
 /-    We prove the soundness of the axiom system DR -/
 
-lemma Barbara : A a B → B a C → A a C :=
+lemma Barbara₁ : A a B → B a C → A a C :=
 begin
 intros h1 h2,
 rw universal_affirmative,
@@ -42,7 +47,7 @@ rw universal_affirmative,
   exact h1 p h4 },
 end
 
-lemma Celarent : A e B → B a C → A e C :=
+lemma Celarent₁ : A e B → B a C → A e C :=
 begin
   intros h1 h2 p h3,
   have h4 : B p := by exact h2 p h3,
@@ -65,41 +70,35 @@ lemma a_conv (hex: ∃x, B x) : A a B → B i A :=
   apply exists.intro p (and.intro hp (h1 p hp))
   end 
 
-lemma contr_1 : A a B = ¬ A o B :=
+lemma contr {p r : Prop} : (c r → c p) → p → r :=
 begin
-apply propext,
-simp [particular_negative, universal_affirmative] at *, 
-apply iff.intro,
-{ intro h1,
-  by_contra h2,
-  cases h2 with u hu,
-  have h3 : A u, from h1 _ hu.1,
-  cc  },
-{ intros h1 u hB,
-    by_contra h3,
-    have h5 : ∃x, B x ∧ ¬ A x, from exists.intro u (and.intro hB h3),
-    cc    },
+intros h1,
+contrapose,
+assumption
 end
 
-lemma contr_2 : A e B = ¬ A i B :=
+/- we can also prove the contradictories  -/
+
+lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
+
+lemma contr_e : c (A e B) = A i B := 
 begin
-apply propext,
-simp [particular_affirmative, universal_negative] at *, 
-apply iff.intro,
-{ intro h1,
-  by_contra h2,
-  cases h2 with u hu,
-  have h3 : ¬ A u, from h1 u hu.2,  
-  cc  },
-{ intros h1 u hB,
-  by_contra h4,
-  have h6 : ∃x, A x ∧ B x, from exists.intro u (and.intro h4 hB),
-  show false, from h1 h6    }
+simp [c, particular_affirmative, universal_negative],
+finish
 end
+
+lemma contr_i : c (A i B) = A e B :=
+begin
+simp [c, particular_affirmative, universal_negative],
+finish
+end
+
+lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
+
 
 /-  it is, of course, also possible to prove the redundant axioms  -/
 
-lemma Darii : A a B → B i C → A i C :=
+lemma Darii₁ : A a B → B i C → A i C :=
 begin
 intros h1 h2,
 cases h2 with p h,
@@ -107,7 +106,7 @@ apply exists.intro p,
 exact and.intro (h1 p h.1) h.2
 end
 
-lemma Ferio : A e B → B i C → A o C :=
+lemma Ferio₁ : A e B → B i C → A o C :=
 begin
   intros h1 h2,
   cases h2 with p h,

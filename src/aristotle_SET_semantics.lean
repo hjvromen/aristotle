@@ -31,6 +31,9 @@ def particular_negative (A: set α) (B: set α) : Prop :=
   A ∩ B ≠ B
 infixr ` o ` : 80 := particular_negative
 
+-- contradictory is defined as negation
+def c (p : Prop) : Prop := ¬ p
+
 --first, we prove a helpful lemma
 lemma inter_empty (h1 : A e B) : x ∈ B → x ∉ A :=
 begin
@@ -44,9 +47,9 @@ show false, from h6 h1
 end
 
 
-/-    We prove the soundness of the axiom system DR -/
+/-    Now, we prove the soundness of the axiom system DR -/
 
-lemma Barbara : A a B → B a C → A a C :=
+lemma Barbara₁ : A a B → B a C → A a C :=
 begin
 intros h1 h2,
 rw universal_affirmative at *,
@@ -57,7 +60,8 @@ calc A ∩ C
 ... = C : by rw h2
 end
 
-lemma Celarent : A e B → B a C → A e C :=
+
+lemma Celarent₁ : A e B → B a C → A e C :=
 begin
   intros h1 h2,
   rw universal_negative at *,
@@ -69,12 +73,14 @@ begin
   ... = ∅ : by simp,
 end
 
+
 lemma e_conv : A e B → B e A :=
 begin
 intro h1,
 rw universal_negative at *,
 cc,
 end
+
 
 lemma a_conv : (A a B ∧ B.nonempty) → B i A :=
   begin
@@ -85,28 +91,36 @@ lemma a_conv : (A a B ∧ B.nonempty) → B i A :=
   cc,
   end 
 
-lemma contr_1 : A a B = ¬ A o B := 
+
+lemma contr {p r : Prop} : (c r → c p) → p → r :=
 begin
---apply propext,
-simp [particular_negative, universal_affirmative] at *, 
+intros h1,
+contrapose!,
+assumption
 end
 
-lemma contr_2 : A e B = ¬ A i B :=
+/- we can also prove the contradictories  -/
+
+lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
+
+lemma contr_e : c (A e B) = A i B := 
 begin
---apply propext,
-simp [particular_affirmative, universal_negative] at *,
-split,
-{ intro h1,
-  by_contra h2,
-  show false, from (set.nonempty.ne_empty h2) h1},
-{ intro h1,
-  rw set.nonempty at h1,
-  tidy  }
+simp [c, particular_affirmative, universal_negative],
+exact set.ne_empty_iff_nonempty
 end
+
+lemma contr_i : c (A i B) = A e B :=
+begin
+simp [c, particular_affirmative, universal_negative],
+exact set.not_nonempty_iff_eq_empty
+end
+
+lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
+
 
 /-  it is, of course, also possible to prove the redundant axioms  -/
 
-lemma Darii : A a B → B i C → A i C :=
+lemma Darii₁ : A a B → B i C → A i C :=
 begin
 intros h1 h2,
 --simp [universal_affirmation, particular_affirmation] at *,
@@ -115,11 +129,10 @@ cases h2 with p hp,
 cases hp,
 rw universal_affirmative at h1,
 have h4 : p ∈ A ∩ B, by cc,
-have h5 : p ∈ A, by exact h4.left,
-exact exists.intro p (and.intro h5 hp_right),
+exact exists.intro p (and.intro h4.left hp_right),
 end
 
-lemma Ferio : A e B → B i C → A o C :=
+lemma Ferio₁ : A e B → B i C → A o C :=
 begin
   intros h1 h2,
   cases h2 with p h,

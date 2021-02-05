@@ -12,34 +12,33 @@ variable {term : Type}                     -- type for terms
 variables {A B C P S M: term}
 
 constant a : term → term → Prop            -- universal affirmative
-local infixr ` a ` : 80 := a
-
 constant e : term → term → Prop            -- universal negative
-local infixr ` e ` : 80 := e
-
 constant i : term → term → Prop            -- particular affirmative
-local infixr ` i ` : 80 := i
-
 constant o : term → term → Prop            -- particular negative
-local infixr ` o ` : 80 := o
+
+infixr ` a ` : 80 := a
+infixr ` e ` : 80 := e
+infixr ` i ` : 80 := i
+infixr ` o ` : 80 := o
 
 -- the 'contradictories'
--- *** is it possible to give an inductive definition instead of using axioms?
 constant c : Prop → Prop
 axiom contr_a : c (A a B) = A o B 
 axiom contr_e : c (A e B) = A i B 
 axiom contr_i : c (A i B) = A e B 
 axiom contr_o : c (A o B) = A a B 
 
-/- Aristotle uses eight axioms / deduction rules see Smith (1989, pp. xix-xx)  -/
+/- The deductive system that follows Aristotle's text as closely as possible 
+Corcoran's. It uses eight axioms / deduction rules. See also Smith, Robin. 
+Aristotle Prior Analytics. Indianapolis, Hackett, 1989, pp. xix-xx)  -/
 
--- the four 'perfect' syllogisms
+-- four 'perfect' syllogisms (we use the traditional medieval names)
 axiom Barbara₁ : P a M → M a S → P a S
 axiom Celarent₁ : P e M → M a S → P e S
 axiom Darii₁ : P a M → M i S → P i S 
 axiom Ferio₁ : P e M → M i S → P o S
 
--- the three conversion rules
+-- three conversion rules
 axiom e_conv : A e B → B e A      --   simple conversion
 axiom i_conv : A i B → B i A      --   simple conversion
 axiom a_conv : A a B → B i A      --   accidental conversion
@@ -52,8 +51,7 @@ theorems but only axioms. The following proofs follow Aristotle's text as closel
 possible. 
 -/
 
-
-/- second-figure syllogisms -/
+/- four second-figure syllogisms -/
 lemma Cesare₂ (h1: M e P) (h2 : M a S) : P e S :=
    Celarent₁ (e_conv h1) h2
 
@@ -75,7 +73,7 @@ have h3 : c (P o S) → c (M o S) :=
 exact contr h3 h2,
 end
 
-/- third-figure syllogisms  -/
+/- six third-figure syllogisms  -/
 lemma Darapti₃ (h1 : P a M) (h2 : S a M) : P i S :=
    Darii₁ h1 (a_conv h2)
 
@@ -104,8 +102,8 @@ lemma Ferison₃ (h1 : P e M) (h2 : S i M) : P o S :=
    Ferio₁ h1 (i_conv h2)
 
 
-/- Aristotle did not mention the four subaltern syllogisms. In order to prove them,
-we state a helpful lemma. -/
+/- Up to now, we have 14 valid syllogisms. There are 10 more. First, we prove
+the four subaltern syllogisms. In order to prove them, we state a helpful lemma. -/
 
 lemma subaltrn_e : A e B → A o B :=       --   accidental conversion
 begin
@@ -136,7 +134,8 @@ lemma Camestrop₂ (h1: M a P) (h2 : M e S) : P o S :=
    subaltrn_e (e_conv (Celarent₁ (e_conv h2) h1))
 
 
--- Aristotle did not mention the fourth-figure syllogisms
+/- Then there are six fourth-figure syllogisms -/
+
 lemma Bramantip₄ (h1 : M a P) (h2 : C a M) : P i C :=
    a_conv (Barbara₁ h2 h1)
 
@@ -155,9 +154,11 @@ lemma Fresison₄ (h1 : M e P) (h2 : C i M) : P o C :=
 lemma Camenop₄ (h1 : M a P) (h2 : C e M) : P o C :=
    subaltrn_e (e_conv(Celarent₁ h2 h1))
 
-/- Metalogical observations. 
-   Aristotle argues that Darii and Ferio do not have to be assumed as axioms, 
-   but can be derived from Barbara and Celarent. (An. Pr. 29b1-2])   -/
+
+/- Metalogical observations. The proof system is redundant. Aristotle already 
+   mentioned that Darii₁ and Ferio₁ do not have to be assumed as axioms, 
+   but can be derived from Barbara₁ and Celarent₁ (An. Pr. 29b1-2]).
+   This is proven below.   -/
 
 lemma Darii (h1 : P a M) (h2 : M i S) : P i S :=
 begin
@@ -181,7 +182,7 @@ have h3 : c (P o S) → c (M i S) :=
 exact contr h3 h2,
 end
 
--- it is even possible to get rid of axiom i_conv
+-- it is even possible to get rid of axiom/rule i_conv
 
 lemma i_conv_deduction : A i B → B i A :=
 begin
@@ -195,29 +196,22 @@ have h4 : c (B i A) → c (A i B) :=
 exact contr h4 h3,
 end
 
-/- 
-So, Barbara and Celarent together with e-conv and a-conv and contr suffice to 
-prove all 24 valid syllogisms; we call this system DR.   -/
+
+/- So, Barbara₁ and Celarent₁ together with e-conv and a-conv and contr 
+   suffice to prove all 24 valid syllogisms.
+   We will refer to this system by the name `DR` in the semantics files..   -/
 
 /-
-************** TODO ****************
-1. Aristotle argued for the invalidity of all but 24 syllogisms by semantical means, 
+************** ideas for further research ****************
+Aristotle argued for the invalidity of all but 24 syllogisms by semantical means, 
 i.e. by providing counterexamples. I would like to prove that all invalid syllogisms 
-not be derived; therefore:
-a. state some rules that are sufficient to refute all invalid syllogisms;
+cannot be derived; therefore:
+a. To show that there are exactly 256 syllogisms, I will have to give an inductive 
+   definition of a syllogism.
+b. The select some rules that are sufficient to refute all invalid syllogisms;
    see, for instance, Rooij, Robert van, and Kaibo Xie. ‘A Causal Analysis 
    of Modal Syllogisms’. In Monotonicity in Logic and Language, edited by Dun 
    Deng, Fenrong Liu, Mingming Liu, and Dag Westerståhl, p. 187. 
    Lecture Notes in Computer Science. Springer Berlin Heidelberg, 2020.
-b. investigate if it is possible to prove these rules in our proof system.
-
-2. To show that there are exactly 256 syllogisms, I would like to give an inductive 
-definition of a syllogism, maybe starting with:
-   
-   inductive assertoric : Type
-   | mk : term → copula → term → ass
-
-   inductive syllogism : Prop
-   | mk : assertoric → assertoric → assertoric → Prop
-But this does not work.
+c. Finally, investigate if it is possible to prove these rules in our proof system.
 -/
