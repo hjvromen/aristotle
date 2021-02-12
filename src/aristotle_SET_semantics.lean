@@ -4,37 +4,39 @@ Author: Huub Vromen
 -/
 
 import data.set.basic
-/-  
-A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
-See, for instance, Smith, Robin. Aristotle Prior Analytics. Indianapolis, IN: Hackett, 1989.
-Terms are interpreted as non-empty subsets of some set of individuals.
--/
+/-- A set-theoretic semantics for Aristotle's assertoric syllogisms is used by 
+    many authors. See, for instance, Smith, 1989.
+    Terms are interpreted as non-empty subsets of some set of individuals. -/
 
-variable {α : Type*}
+variable {α : Type}
+variable {x : α}
 variables {A B C : set α}
 -- *** how can I stipulate that these sets have to be nonempty?
-variable {x : α}
 
+/-- semantics of the `a` relation -/
 def universal_affirmative (A: set α) (B: set α) : Prop := 
   A ∩ B = B
 infixr ` a ` : 80 := universal_affirmative
 
+/-- semantics of the `e` relation -/
 def universal_negative (A: set α) (B: set α) : Prop := 
   A ∩ B = ∅ 
 infixr ` e ` : 80 := universal_negative
 
+/-- semantics of the `i` relation -/
 def particular_affirmative (A: set α) (B: set α) : Prop := 
   (A ∩ B).nonempty 
 infixr ` i ` : 80 := particular_affirmative
 
+/-- semantics of the `o` relation -/
 def particular_negative (A: set α) (B: set α) : Prop :=  
   A ∩ B ≠ B
 infixr ` o ` : 80 := particular_negative
 
--- contradictory is defined as negation
+/-- semantics of contradictory: contradictory is defined as negation -/
 def c (p : Prop) : Prop := ¬ p
 
---first, we prove a helpful lemma
+/-- first, we prove a helpful lemma -/
 lemma inter_empty (h1 : A e B) : x ∈ B → x ∉ A :=
 begin
 rw universal_negative at h1,
@@ -47,7 +49,7 @@ show false, from h6 h1
 end
 
 
-/-    Now, we prove the soundness of the axiom system DR -/
+/--  Now, we prove the soundness of the axiom system DR -/
 
 lemma Barbara₁ : A a B → B a C → A a C :=
 begin
@@ -99,7 +101,7 @@ contrapose!,
 assumption
 end
 
-/- we can also prove the contradictories  -/
+/-- we can also prove the contradictories axioms -/
 
 lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
 
@@ -118,7 +120,7 @@ end
 lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
 
 
-/-  it is, of course, also possible to prove the redundant axioms  -/
+/-- it is, of course, also possible to prove the redundant axioms  -/
 
 lemma Darii₁ : A a B → B i C → A i C :=
 begin
@@ -153,3 +155,4 @@ cases h2 with q r,
 exact exists.intro p (and.intro r q)
 end
 
+#lint

@@ -5,37 +5,38 @@ Author: Huub Vromen
 
 import order.bounded_lattice
 
-/-  Preorder semantics for Aristotle's assertoric syllogisms. 
-The set-theoretic semantics and firist-order logic semantics are extensional 
-semantics, based on sets of individuals. Now we present an internsional semantics.
+/-- Preorder semantics for Aristotle's assertoric syllogisms. 
+The set-theoretic semantics and first-order logic semantics are orthodox 
+semantics, based on sets of individuals. Now we present a heterodox semantics.
 Terms are regarded to be primitives. They form a meet semi-lattice with bot.
-See, for instance, Andrade-Lotero, Edgar, and Catarina Dutilh Novaes. 
-‘Validity, the Squeezing Argument and Alternative Semantic Systems: 
-The Case of Aristotelian Syllogistic’. Journal of Philosophical Logic 41, 
-no. 2 (April 2012): 387–418, pp. 402-403.
+See, for instance, Andrade-Lotero (2012, pp. 402-403). 
 -/
 
 variable {α : Type} 
 variables [semilattice_inf_bot α] {A B C : α}
 -- *** how can I stipulate that these variables are not the bottom element of α?
 
+/-- semantics of the `a` relation -/
 def universal_affirmative (A : α) (B: α) : Prop :=   A ⊓ B = B
 infixr ` a ` : 80 := universal_affirmative
 
+/-- semantics of the `e` relation -/
 def universal_negative (A : α) (B: α) : Prop :=   A ⊓ B = ⊥ 
 infixr ` e ` : 80 := universal_negative
 
+/-- semantics of the `i` relation -/
 def particular_affirmative (A: α) (B: α) : Prop :=   A ⊓ B ≠ ⊥ 
 infixr ` i ` : 80 := particular_affirmative
 
+/-- semantics of the `o` relation -/
 def particular_negative (A: α) (B: α) : Prop :=   A ⊓ B ≠ B
 infixr ` o ` : 80 := particular_negative
 
--- contradictory is defined as negation
+/-- semantics of contradictory: contradictory is defined as negation -/
 def c (p : Prop) : Prop := ¬ p
 
 
-/-    We prove the soundness of the axiom system DR -/
+/--   We prove the soundness of the axiom system DR -/
 
 lemma Barbara₁ : A a B → B a C → A a C :=
 begin
@@ -77,7 +78,7 @@ contrapose!,
 assumption
 end
 
-/- we can also prove the contradictories  -/
+/-- we can also prove the contradictories axioms  -/
 
 lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
 
@@ -88,7 +89,7 @@ lemma contr_i : c (A i B) = A e B := by simp [c, particular_affirmative, univers
 lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
 
 
-/-  it is, of course, also possible to prove the redundant axioms  -/
+/--  it is, of course, also possible to prove the redundant axioms  -/
 
 lemma Darii₁ : A a B → B i C → A i C :=
 begin
@@ -124,4 +125,4 @@ rw [inf_comm],
 assumption
 end
 
-
+#lint

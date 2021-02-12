@@ -3,40 +3,43 @@ Copyright (c) 2021 Huub Vromen. All rights reserved.
 Author: Huub Vromen
 -/
 
-/-  First-order semantics for Aristotle's assertoric syllogisms
-A first-order logic semantics is a variant of a set-theoretic semantics.
-A set-theoretic semantics for Aristotle's assertoric syllogisms is used by many authors.
-See, for instance, ch. 3 of Malink, Marko. Aristotle’s Modal Syllogistic. Harvard University Press, 2013.
-Terms are interpreted as non-empty subsets of some set of individuals.
--/
-
 import data.set.basic
-variable {α : Type}
-variables {A B C : α → Prop}
-variable {x : α}
 
+/--  First-order semantics for Aristotle's assertoric syllogisms
+A first-order logic semantics is a variant of a set-theoretic semantics.
+See, for instance Malink (2013, ch. 3).
+Terms are interpreted as non-empty subsets of some set of individuals. -/
+
+variable {α : Type}
+variable {x : α}
+variables {A B C : α → Prop}
+
+/-- semantics of the `a` relation -/
 def universal_affirmative (A: α → Prop) (B: α → Prop) : Prop := 
   ∀x, B x → A x
 infixr ` a ` : 80 := universal_affirmative
 
+/-- semantics of the `e` relation -/
 def universal_negative (A: α → Prop) (B: α → Prop) : Prop :=  
   ∀x, B x → ¬ A x
 infixr ` e ` : 80 := universal_negative
 
+/-- semantics of the `i` relation -/
 def particular_affirmative (A: α → Prop) (B: α → Prop) : Prop := 
   ∃x, A x ∧ B x
 -- existential import needs to be stipulated
 infixr ` i ` : 80 := particular_affirmative
 
+/-- semantics of the `o` relation -/
 def particular_negative (A: α → Prop) (B: α → Prop) : Prop := 
   ∃x, B x ∧ ¬ A x
 infixr ` o ` : 80 := particular_negative
 
--- contradictory is defined as negation
+/-- semantics of contradictory: contradictory is defined as negation -/
 def c (p : Prop) : Prop := ¬ p
 
 
-/-    We prove the soundness of the axiom system DR -/
+/--  We prove the soundness of the axiom system DR -/
 
 lemma Barbara₁ : A a B → B a C → A a C :=
 begin
@@ -77,7 +80,7 @@ contrapose,
 assumption
 end
 
-/- we can also prove the contradictories  -/
+/-- We can also prove the contradictories axioms -/
 
 lemma contr_a : c (A a B) = A o B := by simp [c, particular_negative, universal_affirmative]
 
@@ -96,7 +99,7 @@ end
 lemma contr_o : c (A o B) = A a B := by simp [c, particular_negative, universal_affirmative]
 
 
-/-  it is, of course, also possible to prove the redundant axioms  -/
+/--  it is, of course, also possible to prove the redundant axioms  -/
 
 lemma Darii₁ : A a B → B i C → A i C :=
 begin
@@ -124,3 +127,4 @@ cases h2 with q r,
 apply exists.intro p (and.intro r q)
 end
 
+#lint
